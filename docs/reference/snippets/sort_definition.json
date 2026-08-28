@@ -1,0 +1,20 @@
+{
+  "sortDefinition": {
+    "sort": [
+      {
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Measures"
+              }
+            },
+            "Property": "Sales"
+          }
+        },
+        "direction": "Descending"
+      }
+    ],
+    "isDefaultSort": false
+  }
+}

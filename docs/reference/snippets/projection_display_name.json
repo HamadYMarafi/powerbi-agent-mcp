@@ -1,0 +1,15 @@
+{
+  "field": {
+    "Measure": {
+      "Expression": {
+        "SourceRef": {
+          "Entity": "Measures"
+        }
+      },
+      "Property": "Net Sales ex Tax"
+    }
+  },
+  "queryRef": "Measures.Net Sales ex Tax",
+  "nativeQueryRef": "Net Sales ex Tax",
+  "displayName": "Net sales ex tax"
+}

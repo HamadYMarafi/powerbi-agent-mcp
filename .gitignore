@@ -1,0 +1,53 @@
+# Your real configuration. config.example.yaml is the template that is committed;
+# config.yaml holds your workspace and model ids and stays local.
+config.yaml
+
+# Your working report folders (cp -r report-template "ORG-Daily Trading.Report"): definition.pbir
+# and .platform inside them carry your real model id and logicalId. report-template/ has no
+# .Report suffix and stays tracked. tools/secret_scan.py skips everything ignored here.
+*.Report/
+!report-template/
+
+# Secrets. Tokens are minted at runtime and never written to disk (see SECURITY.md).
+.env
+.env.*
+*.token
+*token*.json
+.azure/
+
+# Snapshots taken before an edit or a deploy. They hold real report definitions.
+.backup-*/
+.work-*/
+backups/
+
+# Scratch: capture output, validator envelopes, ad-hoc probes.
+scratch/
+captures/
+shots/
+*.png
+*.jpg
+validate.json
+*.dax.out
+
+# Exported copies of the docs. Uncomment if you keep a rendered PDF out of the repo.
+# *.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node (the PBIR validator CLI is run with npx, nothing should be installed here)
+node_modules/
+package-lock.json
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Browser profile used by scripts/capture_pages.py (holds a signed-in session) and the
+# model definition exported by scripts/discover.py (describes your model).
+.browser-profile/
+schema/

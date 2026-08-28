@@ -1,0 +1,6 @@
+mcp>=2.0
+requests>=2.31
+PyYAML>=6.0
+# Optional - only capture_pages needs it:
+# playwright>=1.49        # then: python3 -m playwright install chromium
+#                         # first run opens a window to sign in (needs a display, or xvfb-run); then --headless

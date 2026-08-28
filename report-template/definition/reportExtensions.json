@@ -1,0 +1,93 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportExtension/1.0.0/schema.json",
+  "name": "extension",
+  "entities": [
+    {
+      "name": "Measures",
+      "measures": [
+        {
+          "name": "RM Day Label",
+          "dataType": "Text",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nVAR _Age = INT(TODAY() - _Cut)\nRETURN FORMAT(_Cut, \"ddd d mmm yyyy\") & \" · Wk \" & _W & \" · day \" & COUNTROWS(_DnW) & \"/7\" & IF(_Age >= 1, \" · \" & _Age & IF(_Age = 1, \" day ago\", \" days ago\"), \" · today\")"
+        },
+        {
+          "name": "RM Basis Note",
+          "dataType": "Text",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nVAR _LY = CALCULATE(MAX('Date'[Date]), ALL('Date'), 'Date'[TradingYear] = _Y - 1, 'Date'[TradingWeek] = _W, TREATAS(_Dn, 'Date'[DayName]))\nVAR _Holidays = {DATE(2026,1,1), DATE(2026,12,25), DATE(2027,1,1)}  -- PLACEHOLDER: replace with your public holidays, then keep it current\nRETURN \"LY = \" & FORMAT(_LY, \"ddd d mmm yy\") & IF(_LY IN _Holidays, \" (public holiday — distorted)\", \"\") & IF(_Cut IN _Holidays, \" · latest day is a public holiday\", \"\") & \"  ·  LW = \" & FORMAT(_Cut - 7, \"ddd d mmm\")"
+        },
+        {
+          "name": "RM WTD Sales",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, TREATAS(_DnW, 'Date'[DayName]))"
+        },
+        {
+          "name": "RM WTD Sales LY",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y - 1, 'Date'[TradingWeek] = _W, TREATAS(_DnW, 'Date'[DayName]))"
+        },
+        {
+          "name": "RM WTD Budget",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Budget Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, TREATAS(_DnW, 'Date'[DayName]))"
+        },
+        {
+          "name": "RM WTD vs LY %",
+          "dataType": "Double",
+          "formatString": "0.0%;-0.0%;0.0%",
+          "expression": "VAR __a =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, TREATAS(_DnW, 'Date'[DayName]))\nVAR __b =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y - 1, 'Date'[TradingWeek] = _W, TREATAS(_DnW, 'Date'[DayName]))\nRETURN DIVIDE(__a - __b, __b)"
+        },
+        {
+          "name": "RM WTD vs Budget %",
+          "dataType": "Double",
+          "formatString": "0.0%;-0.0%;0.0%",
+          "expression": "VAR __a =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, TREATAS(_DnW, 'Date'[DayName]))\nVAR __b =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Budget Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, TREATAS(_DnW, 'Date'[DayName]))\nRETURN DIVIDE(__a - __b, __b)"
+        },
+        {
+          "name": "RM YTD Sales",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[Date] <= _Cut)"
+        },
+        {
+          "name": "RM YTD Sales LY",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y - 1, FILTER(ALL('Date'[TradingWeek], 'Date'[DayName]), 'Date'[TradingWeek] < _W || ('Date'[TradingWeek] = _W && 'Date'[DayName] IN _DnW)))"
+        },
+        {
+          "name": "RM YTD Budget",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Budget Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[Date] <= _Cut)"
+        },
+        {
+          "name": "RM YTD vs LY %",
+          "dataType": "Double",
+          "formatString": "0.0%;-0.0%;0.0%",
+          "expression": "VAR __a =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[Date] <= _Cut)\nVAR __b =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y - 1, FILTER(ALL('Date'[TradingWeek], 'Date'[DayName]), 'Date'[TradingWeek] < _W || ('Date'[TradingWeek] = _W && 'Date'[DayName] IN _DnW)))\nRETURN DIVIDE(__a - __b, __b)"
+        },
+        {
+          "name": "RM YTD vs Budget %",
+          "dataType": "Double",
+          "formatString": "0.0%;-0.0%;0.0%",
+          "expression": "VAR __a =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[Date] <= _Cut)\nVAR __b =\nVAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)\nVAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)\nRETURN CALCULATE([Budget Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y, 'Date'[Date] <= _Cut)\nRETURN DIVIDE(__a - __b, __b)"
+        },
+        {
+          "name": "RM LY Sales by Day",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _d = MAX('Date'[Date])\nVAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _d)\nVAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _d)\nVAR _Dn = CALCULATE(MAX('Date'[DayName]), ALL('Date'), 'Date'[Date] = _d)\nRETURN IF(ISBLANK(_d), BLANK(), CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y - 1, 'Date'[TradingWeek] = _W, 'Date'[DayName] = _Dn))"
+        },
+        {
+          "name": "RM Bottom 10 vs Budget",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _r = RANKX(FILTER(ALLSELECTED('Store'[StoreName]), [Sales] > 0), [Sales vs Budget], , ASC, DENSE)\nRETURN IF(_r <= 10 && [Sales] > 0, [Sales vs Budget])"
+        }
+      ]
+    }
+  ]
+}

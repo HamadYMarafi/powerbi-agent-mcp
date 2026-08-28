@@ -1,0 +1,44 @@
+# exec-dashboard-playbook configuration - the single source of ids, names and rules for every script.
+# Copy to config.yaml (gitignored) and edit. workspace.id and semantic_model.id are filled in by:
+#     python3 scripts/discover.py
+# Every id below is the all-zero placeholder; tools/secret_scan.py fails on any other GUID in the repo.
+
+workspace:
+  name: <Workspace Name>            # display name in the Fabric portal
+  id: 00000000-0000-0000-0000-000000000000
+semantic_model:
+  name: <Model Name>                # the model every report binds to; read-only for this repo
+  id: 00000000-0000-0000-0000-000000000000
+
+deploy:
+  item_prefix: ORG-                 # every item this repo creates starts with it; deploy_report.py refuses others
+  report_measure_prefix: 'RM '      # measures that live in the report (reportExtensions.json), not the model
+  allowed_model_ids: []             # extra model GUIDs a report may bind to besides semantic_model.id
+  allow_refresh: false              # gate 1 of 2 on refresh triggering (gate 2 is --i-have-permission). Leave false.
+  filter_marker: org                # prefix of the filter names scripts/date_filters.py writes (orgLatestDayName ...).
+                                    # Independent of item_prefix on purpose. Change it only if you must, then re-run
+                                    # date_filters.py on every pinned visual (docs/reference/ADOPTION_GUIDE.md step 4).
+
+api:
+  powerbi_resource: https://analysis.windows.net/powerbi/api
+  powerbi_base: https://api.powerbi.com/v1.0/myorg
+  fabric_resource: https://api.fabric.microsoft.com
+  fabric_base: https://api.fabric.microsoft.com/v1
+
+# Date-table columns the date filters are written against (docs/MODEL_CONTRACT.md).
+# Point each at your equivalent; the defaults are the contract names.
+date_filters:
+  date_table: Date
+  date_column: Date
+  day_name_column: DayName
+  week_label_column: WeekLabel
+  has_sales_column: HasSales
+
+capture:
+  app_base: https://app.powerbi.com # the portal host; change for a sovereign / GCC tenant
+  report_url: <report url>          # <app_base>/groups/<workspace id>/reports/<report id>; or pass the item id
+  browser_profile_dir: ./.browser-profile   # persistent Chromium profile: sign in once; gitignored
+  settle_seconds: 60                # wait after each page click before the screenshot (60 on a busy tenant)
+
+paths:
+  schema_dir: schema                # discover.py writes the model's TMDL here; gitignored, it describes your model

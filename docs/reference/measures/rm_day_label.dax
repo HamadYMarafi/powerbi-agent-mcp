@@ -1,0 +1,7 @@
+VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)
+VAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)
+VAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)
+VAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)
+VAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)
+VAR _Age = INT(TODAY() - _Cut)
+RETURN FORMAT(_Cut, "ddd d mmm yyyy") & " · Wk " & _W & " · day " & COUNTROWS(_DnW) & "/7" & IF(_Age >= 1, " · " & _Age & IF(_Age = 1, " day ago", " days ago"), " · today")

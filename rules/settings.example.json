@@ -1,0 +1,26 @@
+{
+  "$comment": "Example .claude/settings.json for an agent working through powerbi-agent-mcp. Copy to .claude/settings.json (or merge the permissions block into one you already have). Adjust the mcp__powerbi-agent__ prefix if you registered the server under a different name. Claude Code ignores this $comment key at runtime; it exists for humans reading the file. Full setup: docs/SETUP.md.",
+  "permissions": {
+    "allow": [
+      "mcp__powerbi-agent__connection_status",
+      "mcp__powerbi-agent__list_workspaces",
+      "mcp__powerbi-agent__list_items",
+      "mcp__powerbi-agent__get_model_schema",
+      "mcp__powerbi-agent__run_dax",
+      "mcp__powerbi-agent__get_report_definition",
+      "mcp__powerbi-agent__validate_report",
+      "mcp__powerbi-agent__set_date_filters",
+      "mcp__powerbi-agent__deploy_report",
+      "mcp__powerbi-agent__capture_pages",
+      "mcp__powerbi-agent__refresh_history",
+      "mcp__powerbi-agent__guardrails",
+      "Bash(npx -y @microsoft/powerbi-report-authoring-cli:*)",
+      "Bash(az account get-access-token:*)",
+      "Bash(python -m powerbi_agent_mcp --check)"
+    ],
+    "deny": [
+      "Bash(az rest:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}

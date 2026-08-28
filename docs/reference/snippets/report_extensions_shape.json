@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportExtension/1.0.0/schema.json",
+  "name": "extension",
+  "entities": [
+    {
+      "name": "Measures",
+      "measures": [
+        {
+          "name": "RM Sales Latest Day",
+          "dataType": "Double",
+          "formatString": "#,##0;-#,##0;0",
+          "expression": "VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)\nRETURN CALCULATE([Sales], 'Date'[Date] = _Cut)"
+        }
+      ]
+    }
+  ]
+}

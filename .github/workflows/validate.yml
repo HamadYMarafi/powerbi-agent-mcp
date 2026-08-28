@@ -1,0 +1,50 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pbir-and-guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Offline guardrail tests
+        run: python3 tests/test_guardrails.py
+
+      - name: MCP server surface and refusals (offline)
+        run: python3 tests/test_server.py
+
+      - name: Plugin manifest is valid JSON
+        run: python3 -c "import json; json.load(open('.claude-plugin/marketplace.json')); json.load(open('.mcp.json'))"
+
+      - name: Date-filter helper self-test
+        run: python3 scripts/date_filters.py --selftest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate the PBIR report template (Microsoft powerbi-report-authoring CLI)
+        run: npx -y @microsoft/powerbi-report-authoring-cli validate report-template --format json | tee validate.json
+
+      - name: Fail on validation errors
+        run: |
+          python3 - <<'EOF'
+          import json
+          d = json.load(open('validate.json')).get('data', {})
+          print('errorCount', d.get('errorCount'), 'warningCount', d.get('warningCount'))
+          raise SystemExit(1 if d.get('errorCount') else 0)
+          EOF
+
+      - name: Secret / GUID scan
+        run: python3 tools/secret_scan.py .

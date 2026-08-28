@@ -1,0 +1,5 @@
+VAR _d = MAX('Date'[Date])
+VAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _d)
+VAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _d)
+VAR _Dn = CALCULATE(MAX('Date'[DayName]), ALL('Date'), 'Date'[Date] = _d)
+RETURN IF(ISBLANK(_d), BLANK(), CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[TradingYear] = _Y - 1, 'Date'[TradingWeek] = _W, 'Date'[DayName] = _Dn))

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "powerbi-agent": {
+      "command": "python",
+      "args": ["powerbi_agent_mcp/server.py"],
+      "env": { "POWERBI_MCP_CONFIG": "config.yaml" }
+    }
+  }
+}

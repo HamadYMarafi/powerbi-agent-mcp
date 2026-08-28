@@ -1,0 +1,30 @@
+{
+  "name": "powerbi-agent-mcp",
+  "metadata": {
+    "description": "powerbi-agent-mcp: an MCP server that connects your AI agent to your own Power BI / Fabric tenant, with the guardrails in code, plus the rules and skills the agent follows",
+    "version": "0.1.0"
+  },
+  "owner": {
+    "name": "Hamad Marafi"
+  },
+  "plugins": [
+    {
+      "name": "powerbi-agent",
+      "source": "./",
+      "description": "Power BI dashboard building for AI agents: the powerbi-agent MCP server (list workspaces and items, model schema, read-only DAX, download/validate/deploy PBIR reports with guardrails, date-filter pins, page captures, refresh history) and three skills (build, review, verify). Needs Python 3.11+, `pip install -r requirements.txt`, `az login`, and a config.yaml (see docs/SETUP.md).",
+      "version": "0.1.0",
+      "skills": [
+        "./skills/powerbi-dashboard-build",
+        "./skills/powerbi-dashboard-review",
+        "./skills/powerbi-dashboard-verify"
+      ],
+      "mcpServers": {
+        "powerbi-agent": {
+          "type": "stdio",
+          "command": "python",
+          "args": ["${CLAUDE_PLUGIN_ROOT}/powerbi_agent_mcp/server.py"]
+        }
+      }
+    }
+  ]
+}

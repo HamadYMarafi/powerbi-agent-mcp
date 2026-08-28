@@ -1,0 +1,127 @@
+{
+  "value": [
+    {
+      "properties": {
+        "fontSize": {
+          "expr": {
+            "Literal": {
+              "Value": "13D"
+            }
+          }
+        },
+        "fontColor": {
+          "solid": {
+            "color": {
+              "expr": {
+                "Conditional": {
+                  "Cases": [
+                    {
+                      "Condition": {
+                        "And": {
+                          "Left": {
+                            "Comparison": {
+                              "ComparisonKind": 1,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "Measures"
+                                    }
+                                  },
+                                  "Property": "Sales vs Budget %"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "0D"
+                                }
+                              }
+                            }
+                          },
+                          "Right": {
+                            "Comparison": {
+                              "ComparisonKind": 3,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "Measures"
+                                    }
+                                  },
+                                  "Property": "Sales vs Budget %"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "1D"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "Value": {
+                        "Literal": {
+                          "Value": "'#107C10'"
+                        }
+                      }
+                    },
+                    {
+                      "Condition": {
+                        "Comparison": {
+                          "ComparisonKind": 3,
+                          "Left": {
+                            "Measure": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Entity": "Measures"
+                                }
+                              },
+                              "Property": "Sales vs Budget %"
+                            }
+                          },
+                          "Right": {
+                            "Literal": {
+                              "Value": "0D"
+                            }
+                          }
+                        }
+                      },
+                      "Value": {
+                        "Literal": {
+                          "Value": "'#D13438'"
+                        }
+                      }
+                    }
+                  ],
+                  "DefaultValue": {
+                    "Literal": {
+                      "Value": "'#000000'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "horizontalAlignment": {
+          "expr": {
+            "Literal": {
+              "Value": "'left'"
+            }
+          }
+        },
+        "labelPrecision": {
+          "expr": {
+            "Literal": {
+              "Value": "1L"
+            }
+          }
+        }
+      },
+      "selector": {
+        "id": "default"
+      }
+    }
+  ]
+}

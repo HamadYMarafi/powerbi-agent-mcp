@@ -1,0 +1,5 @@
+VAR _Cut = CALCULATE(MAX('Date'[Date]), 'Date'[HasSales] = TRUE)
+VAR _Y = CALCULATE(MAX('Date'[TradingYear]), ALL('Date'), 'Date'[Date] = _Cut)
+VAR _W = CALCULATE(MAX('Date'[TradingWeek]), ALL('Date'), 'Date'[Date] = _Cut)
+VAR _Dn = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[Date] = _Cut)
+VAR _DnW = CALCULATETABLE(VALUES('Date'[DayName]), ALL('Date'), 'Date'[TradingYear] = _Y, 'Date'[TradingWeek] = _W, 'Date'[HasSales] = TRUE, 'Date'[Date] <= _Cut)

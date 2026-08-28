@@ -1,0 +1,2 @@
+VAR _r = RANKX(FILTER(ALLSELECTED('Store'[StoreName]), [Sales] > 0), [Sales vs Budget], , ASC, DENSE)
+RETURN IF(_r <= 10 && [Sales] > 0, [Sales vs Budget])
